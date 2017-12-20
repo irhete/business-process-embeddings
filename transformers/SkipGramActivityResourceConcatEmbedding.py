@@ -5,7 +5,7 @@ import gensim
 
 class SkipGramActivityResourceConcatEmbedding(TransformerMixin):
     
-    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col):
+    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col, embedding_dim=30):
         self.case_id_col = case_id_col
         self.activity_col = activity_col
         self.resource_col = resource_col
@@ -14,7 +14,7 @@ class SkipGramActivityResourceConcatEmbedding(TransformerMixin):
         self.fit_time = 0
         self.transform_time = 0
         
-        self.wv_size = 15
+        self.wv_size = embedding_dim
         
         self.model = None
         
@@ -33,7 +33,8 @@ class SkipGramActivityResourceConcatEmbedding(TransformerMixin):
         #dt_last = X.groupby(self.case_id_col).last()
         
         # transform numeric cols
-        dt_transformed = X[self.resource_col].apply(self._get_vector)
+        X["concat_col"] = X[[self.activity_col, self.resource_col]].apply(lambda x: '_'.join(x), axis=1)
+        dt_transformed = X["concat_col"].apply(self._get_vector)
         
         self.transform_time = time() - start
         return dt_transformed

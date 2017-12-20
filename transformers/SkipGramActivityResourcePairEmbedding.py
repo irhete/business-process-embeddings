@@ -5,7 +5,7 @@ import gensim
 
 class SkipGramActivityResourcePairEmbedding(TransformerMixin):
     
-    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col):
+    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col, embedding_dim=30):
         self.case_id_col = case_id_col
         self.activity_col = activity_col
         self.resource_col = resource_col
@@ -14,7 +14,7 @@ class SkipGramActivityResourcePairEmbedding(TransformerMixin):
         self.fit_time = 0
         self.transform_time = 0
         
-        self.wv_size = 15
+        self.wv_size = embedding_dim
         
         self.model = None
         

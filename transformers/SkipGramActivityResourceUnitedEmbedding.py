@@ -5,7 +5,7 @@ import gensim
 
 class SkipGramActivityResourceUnitedEmbedding(TransformerMixin):
     
-    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col):
+    def __init__(self, case_id_col, activity_col, resource_col, timestamp_col, embedding_dim=30):
         self.case_id_col = case_id_col
         self.activity_col = activity_col
         self.resource_col = resource_col
@@ -14,7 +14,7 @@ class SkipGramActivityResourceUnitedEmbedding(TransformerMixin):
         self.fit_time = 0
         self.transform_time = 0
         
-        self.wv_size = 30
+        self.wv_size = embedding_dim
         
         self.model = None
         
@@ -22,7 +22,7 @@ class SkipGramActivityResourceUnitedEmbedding(TransformerMixin):
     def fit(self, X, y=None):
         start = time()
         act_res_united_sentences = ActivityResourceUnitedSentences(X, self.case_id_col, self.timestamp_col, [self.activity_col, self.resource_col])
-        self.model = gensim.models.Word2Vec(act_res_united_sentences, size=self.wv_size, window=2, min_count=1, workers=1)
+        self.model = gensim.models.Word2Vec(act_res_united_sentences, size=self.wv_size, window=1, min_count=1, workers=1)
         self.fit_time = time() - start
         return self
     
@@ -56,4 +56,15 @@ class ActivityResourceUnitedSentences(object):
     def __iter__(self):
         grouped = self.data.sort_values(self.timestamp_col, ascending=True).groupby(self.case_id_col)
         for _, group in grouped:
-            yield group[self.cols].values.flatten().tolist()
+            activities = group[self.activity_col].tolist()
+            resources = group[self.resource_col].tolist()
+            for i in range(len(activities)-1):
+                yield [activities[i], resources[i]]
+                yield [activities[i], activities[i+1]]
+                yield [activities[i], resources[i+1]]
+                yield [resources[i], activities[i+1]]
+                yield [resources[i], resources[i+1]]
+                
+            yield [activities[-1], resources[-1]]
+            #yield group[self.cols].values.flatten().tolist()
+            
