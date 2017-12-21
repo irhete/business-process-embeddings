@@ -47,7 +47,7 @@ class ActivityResourceMatrixTransformer(TransformerMixin):
     
     def _get_vector(self, value):
         if value in self.model.index:
-            return pd.Series(self.model[self.model.index == value].iloc[0])
+            return pd.Series(list(self.model[self.model.index == value].iloc[0]))
         else:
             return(pd.Series([0] * self.model.shape[1]))
             

@@ -21,7 +21,7 @@ class SkipGramActivityResourceUnitedEmbedding(TransformerMixin):
     
     def fit(self, X, y=None):
         start = time()
-        act_res_united_sentences = ActivityResourceUnitedSentences(X, self.case_id_col, self.timestamp_col, [self.activity_col, self.resource_col])
+        act_res_united_sentences = ActivityResourceUnitedSentences(X, self.case_id_col, self.timestamp_col, self.activity_col, self.resource_col)
         self.model = gensim.models.Word2Vec(act_res_united_sentences, size=self.wv_size, window=1, min_count=1, workers=1)
         self.fit_time = time() - start
         return self
@@ -47,9 +47,10 @@ class SkipGramActivityResourceUnitedEmbedding(TransformerMixin):
     
     
 class ActivityResourceUnitedSentences(object):
-    def __init__(self, data, case_id_col, timestamp_col, cols):
+    def __init__(self, data, case_id_col, timestamp_col, activity_col, resource_col):
         self.data = data
-        self.cols = cols
+        self.activity_col = activity_col
+        self.resource_col = resource_col
         self.case_id_col = case_id_col
         self.timestamp_col = timestamp_col
  
