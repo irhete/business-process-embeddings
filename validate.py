@@ -132,7 +132,7 @@ space = {
 trials = Trials()
 best = fmin(create_and_evaluate_model, space, algo=tpe.suggest, max_evals=8, trials=trials)
 
-print best
-print hyperopt.space_eval(space, best)
+print(best)
+print(hyperopt.space_eval(space, best))
 for trial in trials.trials:
-    print trial
+    print(trial)
