@@ -28,10 +28,10 @@ def create_and_evaluate_model(args):
     start = time.time()
 
     dropout = args['dropout']
-    lstmsize = args['lstmsize']
+    lstmsize = int(args['lstmsize'])
     learning_rate = args['learning_rate']
-    batch_size = args['batch_size']
-    n_layers = args["n_layers"]
+    batch_size = int(args['batch_size'])
+    n_layers = int(args["n_layers"])
     
     main_input = Input(shape=(max_len, data_dim), name='main_input')
 
@@ -123,10 +123,10 @@ print("Done: %s"%(time.time() - start))
 print('Optimizing parameters...')
 space = {
         'dropout': hp.uniform('dropout', 0, 0.3),
-        'lstmsize': hp.choice('lstmsize', range(10, 151)),
-        'batch_size': hp.choice('batch_size', [8, 16, 32, 64]),
-        'n_layers': hp.choice('n_layers', [1, 2, 3]),
-        'learning_rate': hp.loguniform('learning_rate', 0.000001, 0.0001)
+        'lstmsize': hp.choice('lstmsize', [str(val) for val in range(10, 151)]),
+        'batch_size': hp.choice('batch_size', ["8", "16", "32", "64"]),
+        'n_layers': hp.choice('n_layers', ["1", "2", "3"]),
+        'learning_rate': hp.loguniform('learning_rate', np.log(0.000001), np.log(0.0001))
     }
 
 trials = Trials()
@@ -134,5 +134,5 @@ best = fmin(create_and_evaluate_model, space, algo=tpe.suggest, max_evals=8, tri
 
 print best
 print hyperopt.space_eval(space, best)
-for trial in trials.trials[:2]:
+for trial in trials.trials:
     print trial
